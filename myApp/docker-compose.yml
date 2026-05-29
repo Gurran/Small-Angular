@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+    depends_on:
+      - db
+    networks:
+      - frontend_net
+
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql
+    networks:
+      - backend_net
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Database=postgres;Username=postgres;Password=postgres
+    ports:
+      - '5000:80'
+    depends_on:
+      - db
+    networks:
+      - frontend_net
+      - backend_net
+
+volumes:
+  db-data:
+
+networks:
+  frontend_net:
+  backend_net:

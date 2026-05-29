@@ -1,0 +1,90 @@
+<main>
+  <h1>Projects</h1>
+
+  <section class="controls">
+    <input
+      pInputText
+      type="text"
+      placeholder="New project name"
+      [value]="newProjectName()"
+      (input)="newProjectName.set($any($event.target).value)"
+    />
+    <p-button
+      label="Add project"
+      (click)="addProject()"
+      [disabled]="newProjectName().trim().length === 0"
+    ></p-button>
+
+    <p-button
+      label="Refresh"
+      severity="info"
+      (click)="loadProjects()"
+      [disabled]="loading()"
+    ></p-button>
+  </section>
+
+  <section class="search">
+    <input
+      pInputText
+      type="text"
+      placeholder="Search projects..."
+      [value]="searchFilter()"
+      (input)="searchFilter.set($any($event.target).value)"
+    />
+  </section>
+
+  @if (loading()) {
+    <p>Loading projects...</p>
+  }
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (!loading() && !error() && filteredProjects().length > 0) {
+    <p-table [value]="filteredProjects()">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-project>
+        <tr>
+          <td>{{ project.id }}</td>
+          <td>
+            @if (editingProjectId() === project.id) {
+              <input
+                pInputText
+                type="text"
+                [value]="editingProjectName()"
+                (input)="editingProjectName.set($any($event.target).value)"
+              />
+            } @else {
+              {{ project.name }}
+            }
+          </td>
+          <td style="display: flex; gap: 0.5rem">
+            @if (editingProjectId() === project.id) {
+              <p-button
+                icon="pi pi-check"
+                severity="success"
+                (click)="saveRename(project.id)"
+              ></p-button>
+              <p-button icon="pi pi-times" severity="secondary" (click)="cancelEdit()"></p-button>
+            } @else {
+              <p-button icon="pi pi-pencil" severity="info" (click)="startEdit(project)"></p-button>
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                (click)="deleteProject(project.id)"
+              ></p-button>
+            }
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  } @else {
+    <p>No projects found.</p>
+  }
+</main>
