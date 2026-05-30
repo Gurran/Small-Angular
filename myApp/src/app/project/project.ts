@@ -3,17 +3,17 @@ import { Component, OnInit, computed, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
-import { ProjectsService, type Project } from './projects.service';
+import { ProjectsService, type Project as Projects } from '../services/projects.service';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-project',
   standalone: true,
   imports: [CommonModule, ButtonModule, TableModule, InputTextModule],
-  templateUrl: './home.html',
-  styleUrl: './home.scss',
+  templateUrl: './project.html',
+  styleUrl: './project.scss',
 })
-export class Home implements OnInit {
-  protected readonly projects = signal<Project[]>([]);
+export class Project implements OnInit {
+  protected readonly projects = signal<Projects[]>([]);
   protected readonly newProjectName = signal('');
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
@@ -81,7 +81,7 @@ export class Home implements OnInit {
     }
   }
 
-  protected startEdit(project: Project) {
+  protected startEdit(project: Projects) {
     this.editingProjectId.set(project.id);
     this.editingProjectName.set(project.name);
   }
